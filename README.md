@@ -15,7 +15,7 @@
 }
 ```
 #iphone的效果图
-![image](./Image/1.png)<br>
-![image](./Image/2.png)<br>
-![image](./Image/3.png)<br>
-![image](./Image/4.png)<br>
+![image](./image/1.png)<br>
+![image](./image/2.png)<br>
+![image](./image/3.png)<br>
+![image](./image/4.png)<br>
