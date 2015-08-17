@@ -122,7 +122,7 @@
 }
 - (void)showInView:(UIView *)view
 {
-    [view.window addSubview:self];
+    [[[[UIApplication sharedApplication] windows] lastObject] addSubview:self];
     self.sheetView.hidden = NO;
     CGRect sheetViewF = self.sheetView.frame;
     sheetViewF.origin.y = CGRectGetHeight(self.frame);
