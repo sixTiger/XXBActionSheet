@@ -7,13 +7,33 @@
 //
 #import "XXBActionSheet.h"
 
-#pragma 显示的按钮
+
+
+
+// 每个按钮的高度
+#define CellHeight 46
+// 取消按钮上面的间隔高度
+#define Margin 8
+
+#define XXBCColor(r, g, b) [UIColor colorWithRed:(r/255.0) green:(g/255.0) blue:(b/255.0) alpha:1.0]
+// 背景色
+#define GlobelBgColor XXBCColor(237, 240, 242)
+// 分割线颜色
+#define GlobelSeparatorColor XXBCColor(226, 226, 226)
+// 普通状态下的图片
+#define normalImage [self createImageWithColor:XXBCColor(255, 255, 255)]
+// 高亮状态下的图片
+#define highImage [self createImageWithColor:XXBCColor(242, 242, 242)]
+
+// 字体
+#define HeitiLight(f) [UIFont fontWithName:@"STHeitiSC-Light" size:f]
+
+
+#pragma  mark - 显示的按钮
 @interface XXBActionSheetTableViewCell : UITableViewCell
 @property(nonatomic , strong)UILabel *titleLabel;
-
 @property(nonatomic , strong)UIView *lineView;
 @end
-
 @implementation XXBActionSheetTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -35,7 +55,8 @@
         [self.contentView addConstraint:lcBottomTitleLabel];
         
         _lineView = [UIView new];
-        _lineView.backgroundColor = [UIColor blackColor];
+        
+        _lineView.backgroundColor = GlobelSeparatorColor;
         [self.contentView addSubview:_lineView];
         _lineView.translatesAutoresizingMaskIntoConstraints = NO;
         
@@ -54,28 +75,10 @@
 
 @end
 
-// 每个按钮的高度
-#define CellHeight 46
-// 取消按钮上面的间隔高度
-#define Margin 8
-
-#define HJCColor(r, g, b) [UIColor colorWithRed:(r/255.0) green:(g/255.0) blue:(b/255.0) alpha:1.0]
-// 背景色
-#define GlobelBgColor HJCColor(237, 240, 242)
-// 分割线颜色
-#define GlobelSeparatorColor HJCColor(226, 226, 226)
-// 普通状态下的图片
-#define normalImage [self createImageWithColor:HJCColor(255, 255, 255)]
-// 高亮状态下的图片
-#define highImage [self createImageWithColor:HJCColor(242, 242, 242)]
-
-// 字体
-#define HeitiLight(f) [UIFont fontWithName:@"STHeitiSC-Light" size:f]
-
 @interface XXBActionSheet ()<UITableViewDataSource,UITableViewDelegate>
 @property(nonatomic , strong)UITableView *tableView;
 @property (nonatomic, strong)UIView *sheetView;
-
+@property(nonatomic , strong)UIView *titleView;
 @property(nonatomic , strong)UILabel *titleLabel;
 @property(nonatomic , strong)NSMutableArray *dataSourceArray;
 @property(nonatomic , copy)NSString *title;
@@ -94,7 +97,7 @@
         self.backgroundColor = [UIColor clearColor];
         self.autoresizingMask = (1 << 6) -1;
         [self p_creatSheetView];
-        [self p_creatTitleLabel:title];
+        [self p_creatTitleView:title];
         
         NSString* curStr;
         va_list list;
@@ -113,16 +116,7 @@
         CGRect sheetViewF = _sheetView.frame;
         sheetViewF.size.height = CellHeight + Margin + CellHeight * self.dataSourceArray.count;
         _sheetView.frame = sheetViewF;
-        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, _sheetView.frame.size.height - CellHeight, CGRectGetWidth(self.sheetView.frame), CellHeight)];
-        btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth| UIViewAutoresizingFlexibleRightMargin| UIViewAutoresizingFlexibleTopMargin;
-        [btn setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [btn setBackgroundImage:highImage forState:UIControlStateHighlighted];
-        [btn setTitle:cancelButtonTitle forState:UIControlStateNormal];
-        [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        btn.titleLabel.font = HeitiLight(17);
-        btn.tag = 0;
-        [btn addTarget:self action:@selector(sheetBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [self.sheetView addSubview:btn];
+        [self p_creatCancleButton:cancelButtonTitle];
     }
     return self;
 }
@@ -152,7 +146,9 @@
     sheetViewFrame.size.height = height;
     sheetViewFrame.origin.y = CGRectGetHeight(self.frame) - height;
     self.sheetView.frame = sheetViewFrame;
-    self.tableView.alwaysBounceVertical = self.tableView.contentSize.height > self.tableView.frame.size.height;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.tableView.alwaysBounceVertical = self.tableView.contentSize.height > self.tableView.frame.size.height + 1;
+    });
 }
 - (void)p_creatSheetView
 {
@@ -163,16 +159,20 @@
     _sheetView.hidden = YES;
 }
 
-- (void)p_creatTitleLabel:(NSString *)title
+- (void)p_creatTitleView:(NSString *)title
 {
     if (title)
     {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _sheetView.frame.size.width, CellHeight)];
+        _titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _sheetView.frame.size.width, CellHeight)];
+        _titleView.backgroundColor = GlobelSeparatorColor;
+        [_sheetView addSubview:_titleView];
+        _titleView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth;
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(_titleView.frame), CellHeight - 0.5)];
         _titleLabel.text = title;
         _titleLabel.backgroundColor = [UIColor whiteColor];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth;
-        [_sheetView addSubview:_titleLabel];
+        [_titleView addSubview:_titleLabel];
+        _titleLabel.autoresizingMask = (1 << 6) -1;
     }
 }
 - (void)p_creatTableView
@@ -189,10 +189,24 @@
     
     NSLayoutConstraint *lcRightTableView = [NSLayoutConstraint constraintWithItem:_tableView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_sheetView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
     NSLayoutConstraint *lcLeftTableView = [NSLayoutConstraint constraintWithItem:_tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_sheetView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
-    NSLayoutConstraint *lcTopTableView = [NSLayoutConstraint constraintWithItem:_tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem: _sheetView attribute:NSLayoutAttributeTop multiplier:1.0 constant:CGRectGetHeight(_titleLabel.bounds)];
+    NSLayoutConstraint *lcTopTableView = [NSLayoutConstraint constraintWithItem:_tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem: _sheetView attribute:NSLayoutAttributeTop multiplier:1.0 constant:CGRectGetHeight(_titleView.bounds)];
     
     NSLayoutConstraint *lcBottomTableView = [NSLayoutConstraint constraintWithItem:_tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_sheetView attribute:NSLayoutAttributeBottom multiplier:1.0 constant: -CellHeight - Margin];
     [self.sheetView addConstraints:@[lcRightTableView, lcLeftTableView,lcTopTableView,lcBottomTableView]];
+}
+- (void)p_creatCancleButton:(NSString *)string
+{
+    
+    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, _sheetView.frame.size.height - CellHeight, CGRectGetWidth(self.sheetView.frame), CellHeight)];
+    btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth| UIViewAutoresizingFlexibleRightMargin| UIViewAutoresizingFlexibleTopMargin;
+    [btn setBackgroundImage:normalImage forState:UIControlStateNormal];
+    [btn setBackgroundImage:highImage forState:UIControlStateHighlighted];
+    [btn setTitle:string forState:UIControlStateNormal];
+    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    btn.titleLabel.font = HeitiLight(17);
+    btn.tag = 0;
+    [btn addTarget:self action:@selector(sheetBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.sheetView addSubview:btn];
 }
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
