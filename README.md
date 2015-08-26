@@ -15,7 +15,7 @@ pod 'XXBActionSheet',:git => 'https://github.com/sixTiger/XXBActionSheet'
     [sheet showInView:self.view];
 }
 
-// 3.实现代理方法，需要遵守HJCActionSheetDelegate代理协议
+// 3.实现代理方法，需要遵守XXBCActionSheetDelegate代理协议
 - (void)actionSheet:(XXBActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSLog(@"%@",@(buttonIndex));
