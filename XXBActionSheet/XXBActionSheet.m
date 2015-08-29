@@ -83,7 +83,7 @@
 @end
 
 @interface XXBActionSheet ()<UITableViewDataSource,UITableViewDelegate>
-@property(nonatomic , strong)UIWindow           *alertWindow;
+@property(nonatomic , strong)UIWindow           *actionSheetWindow;
 @property(nonatomic , strong)UITableView        *tableView;
 @property (nonatomic, strong)UIView             *sheetView;
 @property(nonatomic , strong)UIView             *titleView;
@@ -101,10 +101,6 @@
         [self p_creatWindow];
     }
     return self;
-}
-- (void)dealloc
-{
-    NSLog(@"++++");
 }
 - (instancetype)initWithTitle:(NSString *)title delegate:(id<XXBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
@@ -138,8 +134,8 @@
 }
 - (void)showInView:(UIView *)view
 {
-    self.frame = self.alertWindow.rootViewController.view.bounds;
-    [self.alertWindow.rootViewController.view addSubview:self];
+    self.frame = self.actionSheetWindow.rootViewController.view.bounds;
+    [self.actionSheetWindow.rootViewController.view addSubview:self];
     self.sheetView.hidden = NO;
     CGRect sheetViewF = self.sheetView.frame;
     sheetViewF.origin.y = CGRectGetHeight(self.frame);
@@ -153,11 +149,11 @@
 }
 - (void)p_creatWindow
 {
-    _alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    _alertWindow.backgroundColor = [UIColor clearColor];
-    _alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [_alertWindow makeKeyAndVisible];
-    _alertWindow.rootViewController = [[UIViewController alloc] init];
+    _actionSheetWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _actionSheetWindow.backgroundColor = [UIColor clearColor];
+    _actionSheetWindow.windowLevel = UIWindowLevelAlert + 1;
+    [_actionSheetWindow makeKeyAndVisible];
+    _actionSheetWindow.rootViewController = [[UIViewController alloc] init];
 }
 - (void)layoutSubviews
 {
