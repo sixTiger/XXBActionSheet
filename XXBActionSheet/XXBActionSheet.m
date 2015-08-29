@@ -83,31 +83,28 @@
 @end
 
 @interface XXBActionSheet ()<UITableViewDataSource,UITableViewDelegate>
-@property(nonatomic , strong)UITableView *tableView;
-@property (nonatomic, strong)UIView *sheetView;
-@property(nonatomic , strong)UIView *titleView;
-@property(nonatomic , strong)UILabel *titleLabel;
-@property(nonatomic , strong)NSMutableArray *dataSourceArray;
+@property(nonatomic , strong)UIWindow           *alertWindow;
+@property(nonatomic , strong)UITableView        *tableView;
+@property (nonatomic, strong)UIView             *sheetView;
+@property(nonatomic , strong)UIView             *titleView;
+@property(nonatomic , strong)UILabel            *titleLabel;
+@property(nonatomic , strong)NSMutableArray     *dataSourceArray;
 @property(nonatomic , copy)NSString *title;
 @end
 
 @implementation XXBActionSheet
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    CGSize size = [self p_countScreenSize];
-    if (self = [super initWithFrame:CGRectMake(0, 0,size.width , size.height)])
+    if (self = [super initWithFrame:[UIScreen mainScreen].bounds])
     {
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-        // 黑色遮盖
-        self.backgroundColor = [UIColor clearColor];
-        self.autoresizingMask = (1 << 6) -1;
+        self.autoresizingMask = (1 << 6) - 1;
+        [self p_creatWindow];
     }
     return self;
 }
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"++++");
 }
 - (instancetype)initWithTitle:(NSString *)title delegate:(id<XXBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
@@ -141,18 +138,8 @@
 }
 - (void)showInView:(UIView *)view
 {
-    if ([UIDevice currentDevice].systemVersion.floatValue < 8.0)
-    {
-        [self p_show_iOS7];
-    }
-    else
-    {
-        [self p_show_iOS8];
-    }
-}
-- (void)p_show_iOS7
-{
-    [[[[UIApplication sharedApplication] windows] lastObject] addSubview:self];
+    self.frame = self.alertWindow.rootViewController.view.bounds;
+    [self.alertWindow.rootViewController.view addSubview:self];
     self.sheetView.hidden = NO;
     CGRect sheetViewF = self.sheetView.frame;
     sheetViewF.origin.y = CGRectGetHeight(self.frame);
@@ -164,52 +151,17 @@
         self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
     }];
 }
-- (void)p_show_iOS8
+- (void)p_creatWindow
 {
-    [[[[UIApplication sharedApplication] windows] lastObject] addSubview:self];
-    self.sheetView.hidden = NO;
-    CGRect sheetViewF = self.sheetView.frame;
-    sheetViewF.origin.y = CGRectGetHeight(self.frame);
-    self.sheetView.frame = sheetViewF;
-    CGRect newSheetViewF = self.sheetView.frame;
-    newSheetViewF.origin.y = CGRectGetHeight(self.frame) - self.sheetView.frame.size.height;
-    [UIView animateWithDuration:0.3 animations:^{
-        self.sheetView.frame = newSheetViewF;
-        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-    }];
+    _alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _alertWindow.backgroundColor = [UIColor clearColor];
+    _alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    [_alertWindow makeKeyAndVisible];
+    _alertWindow.rootViewController = [[UIViewController alloc] init];
 }
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    if ([UIDevice currentDevice].systemVersion.floatValue < 8.0)
-    {
-        [self p_relayoutSubViews_iOS7];
-    }
-    else
-    {
-        [self p_relayoutSubViews_iOS8];
-    }
-}
-- (void)p_relayoutSubViews_iOS7
-{
-    
-    CGSize size = [self p_countScreenSize];
-    CGFloat height = self.dataSourceArray.count * CellHeight + CellHeight + Margin + (self.title?CellHeight:0);
-    if (height >= [self p_countScreenSize].height)
-    {
-        height = [self p_countScreenSize].height - 44;
-    }
-    CGRect sheetViewFrame = self.sheetView.frame;
-    sheetViewFrame.size.height = height;
-    sheetViewFrame.origin.y = size.height - height;
-    self.sheetView.frame = sheetViewFrame;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.tableView.alwaysBounceVertical = self.tableView.contentSize.height > self.tableView.frame.size.height + 1;
-    });
-}
-- (void)p_relayoutSubViews_iOS8
-{
-    
     CGFloat height = self.dataSourceArray.count * CellHeight + CellHeight + Margin + (self.title?CellHeight:0);
     if (height >= CGRectGetHeight(self.frame))
     {
@@ -223,56 +175,6 @@
         self.tableView.alwaysBounceVertical = self.tableView.contentSize.height > self.tableView.frame.size.height + 1;
     });
 }
-- (void)deviceOrientationDidChange: (NSNotification *)notification
-{
-    
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1)
-    {
-        [self p_changeOrientationForIOS7];
-    }
-//    [self layoutSubviews];
-}
-// Rotation changed, on iOS7
-- (void)p_changeOrientationForIOS7 {
-    
-    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-    UIView   *firstResponder = [keyWindow performSelector:@selector(firstResponder)];
-    
-    NSLog(@"%@",firstResponder);
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    CGRect selfFrame = self.frame;
-    CGSize size = [self p_countScreenSize];
-    NSLog(@"%@",@((self.frame.size.height - size.height) * 0.5));
-//     self.frame = CGRectMake(self.frame.origin.x + (self.frame.size.width - size.width) * 0.5, -200, size.width, size.height);
-    CGAffineTransform rotation;
-    switch (interfaceOrientation) {
-        case UIInterfaceOrientationLandscapeLeft:
-            rotation = CGAffineTransformMakeRotation(  M_PI * 270.0 / 180.0);
-            break;
-            
-        case UIInterfaceOrientationLandscapeRight:
-            rotation = CGAffineTransformMakeRotation( M_PI * 90.0 / 180.0);
-            break;
-            
-        case UIInterfaceOrientationPortraitUpsideDown:
-            rotation = CGAffineTransformMakeRotation( M_PI * 180.0 / 180.0);
-            break;
-            
-        default:
-            rotation = CGAffineTransformMakeRotation( 0.0);
-            break;
-    }
-    
-    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         self.transform = rotation;
-                         self.frame = selfFrame;
-                         
-                     }
-                     completion:nil
-     ];
-    
-}
 - (void)p_creatSheetView
 {
     _sheetView = [[UIView alloc] initWithFrame:self.bounds];
@@ -281,7 +183,6 @@
     [self addSubview:_sheetView];
     _sheetView.hidden = YES;
 }
-
 - (void)p_creatTitleView:(NSString *)title
 {
     if (title)
@@ -305,8 +206,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    
+
     
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -331,37 +231,21 @@
     [btn addTarget:self action:@selector(sheetBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.sheetView addSubview:btn];
 }
-- (CGSize)p_countScreenSize
-{
-    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
-    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
-    
-    // 对iOS7最调整
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
-        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-            CGFloat tmp = screenWidth;
-            screenWidth = screenHeight;
-            screenHeight = tmp;
-        }
-    }
-    
-    return CGSizeMake(screenWidth, screenHeight);
-}
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self coverClick];
 }
 - (void)coverClick{
     CGRect sheetViewF = self.sheetView.frame;
-    sheetViewF.origin.y = CGRectGetHeight(self.frame);
-    
-    [UIView animateWithDuration:0.2 animations:^{
+    sheetViewF.origin.y = CGRectGetHeight(self.sheetView.frame);
+    [UIView animateWithDuration:0.25 animations:^{
         self.sheetView.frame = sheetViewF;
-        self.alpha = 0.0;
     } completion:^(BOOL finished) {
-        [self removeFromSuperview];
-        [self.sheetView removeFromSuperview];
+        [UIView animateWithDuration:0.25 animations:^{
+            self.alpha = 0.0;
+        } completion:^(BOOL finished) {
+            [self removeFromSuperview];
+        }];
     }];
 }
 - (void)sheetBtnClick:(UIButton *)btn{

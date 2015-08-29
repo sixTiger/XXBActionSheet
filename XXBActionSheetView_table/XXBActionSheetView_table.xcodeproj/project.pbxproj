@@ -12,7 +12,6 @@
 		6268AFF31B80B241009E7423 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6268AFF21B80B241009E7423 /* ViewController.m */; };
 		6268AFF61B80B241009E7423 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6268AFF41B80B241009E7423 /* Main.storyboard */; };
 		6268AFF81B80B241009E7423 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6268AFF71B80B241009E7423 /* Images.xcassets */; };
-		6268AFFB1B80B241009E7423 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6268AFF91B80B241009E7423 /* LaunchScreen.xib */; };
 		6268B0071B80B241009E7423 /* XXBActionSheetView_tableTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6268B0061B80B241009E7423 /* XXBActionSheetView_tableTests.m */; };
 		62AA186D1B8C4A3C00CF7F02 /* XXBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 62AA186C1B8C4A3C00CF7F02 /* XXBActionSheet.m */; };
 /* End PBXBuildFile section */
@@ -37,7 +36,6 @@
 		6268AFF21B80B241009E7423 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		6268AFF51B80B241009E7423 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6268AFF71B80B241009E7423 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		6268AFFA1B80B241009E7423 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6268B0001B80B241009E7423 /* XXBActionSheetView_tableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XXBActionSheetView_tableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6268B0051B80B241009E7423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6268B0061B80B241009E7423 /* XXBActionSheetView_tableTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XXBActionSheetView_tableTests.m; sourceTree = "<group>"; };
@@ -91,7 +89,6 @@
 				6268AFF21B80B241009E7423 /* ViewController.m */,
 				6268AFF41B80B241009E7423 /* Main.storyboard */,
 				6268AFF71B80B241009E7423 /* Images.xcassets */,
-				6268AFF91B80B241009E7423 /* LaunchScreen.xib */,
 				6268AFEA1B80B241009E7423 /* Supporting Files */,
 			);
 			path = XXBActionSheetView_table;
@@ -214,7 +211,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6268AFF61B80B241009E7423 /* Main.storyboard in Resources */,
-				6268AFFB1B80B241009E7423 /* LaunchScreen.xib in Resources */,
 				6268AFF81B80B241009E7423 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,14 +261,6 @@
 				6268AFF51B80B241009E7423 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		6268AFF91B80B241009E7423 /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6268AFFA1B80B241009E7423 /* Base */,
-			);
-			name = LaunchScreen.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -362,6 +350,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = XXBActionSheetView_table/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -373,6 +363,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = XXBActionSheetView_table/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
