@@ -233,7 +233,7 @@
 }
 - (void)coverClick{
     CGRect sheetViewF = self.sheetView.frame;
-    sheetViewF.origin.y = CGRectGetHeight(self.sheetView.frame);
+    sheetViewF.origin.y = CGRectGetHeight(self.frame);
     [UIView animateWithDuration:0.25 animations:^{
         self.sheetView.frame = sheetViewF;
     } completion:^(BOOL finished) {
