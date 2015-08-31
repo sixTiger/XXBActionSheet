@@ -244,14 +244,12 @@
         }];
     }];
 }
-- (void)sheetBtnClick:(UIButton *)btn{
-    if (btn.tag == 0) {
-        [self coverClick];
-        return;
-    }
-    if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
-        [self.delegate actionSheet:self clickedButtonAtIndex:btn.tag];
-        [self coverClick];
+- (void)sheetBtnClick:(UIButton *)btn
+{
+    [self coverClick];
+    if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)])
+    {
+        [self.delegate actionSheet:self clickedButtonAtIndex:self.dataSourceArray.count];
     }
 }
 - (UIImage*)createImageWithColor:(UIColor*)color
