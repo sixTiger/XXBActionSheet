@@ -83,6 +83,7 @@
 @end
 
 @interface XXBActionSheet ()<UITableViewDataSource,UITableViewDelegate>
+@property(nonatomic , strong)UIWindow           *keyWindow;
 @property(nonatomic , strong)UIWindow           *actionSheetWindow;
 @property(nonatomic , strong)UITableView        *tableView;
 @property (nonatomic, strong)UIView             *sheetView;
@@ -149,6 +150,7 @@
 }
 - (void)p_creatWindow
 {
+    _keyWindow = [UIApplication sharedApplication].keyWindow;
     _actionSheetWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _actionSheetWindow.backgroundColor = [UIColor clearColor];
     _actionSheetWindow.windowLevel = UIWindowLevelAlert + 1;
@@ -202,7 +204,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-
+    
     
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -232,7 +234,8 @@
     [self coverClick];
 }
 - (void)coverClick{
-    CGRect sheetViewF = self.sheetView.frame;
+    [self.keyWindow makeKeyAndVisible];
+    CGRect sheetViewF = self.frame;
     sheetViewF.origin.y = CGRectGetHeight(self.frame);
     [UIView animateWithDuration:0.25 animations:^{
         self.sheetView.frame = sheetViewF;
@@ -288,4 +291,3 @@
     [self.delegate actionSheet:self clickedButtonAtIndex:indexPath.row];
 }
 @end
-
