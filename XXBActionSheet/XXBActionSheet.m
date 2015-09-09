@@ -145,7 +145,7 @@
     newSheetViewF.origin.y = CGRectGetHeight(self.frame) - self.sheetView.frame.size.height;
     [UIView animateWithDuration:0.3 animations:^{
         self.sheetView.frame = newSheetViewF;
-        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+        self.window.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
     }];
 }
 - (void)p_creatWindow
@@ -226,33 +226,33 @@
     [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     btn.titleLabel.font = HeitiLight(17);
     btn.tag = 0;
-    [btn addTarget:self action:@selector(sheetBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [btn addTarget:self action:@selector(cancleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.sheetView addSubview:btn];
 }
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self coverClick];
 }
-- (void)coverClick{
+- (void)coverClick
+{
     [self.keyWindow makeKeyAndVisible];
-    CGRect sheetViewF = self.frame;
-    sheetViewF.origin.y = CGRectGetHeight(self.frame);
+    CGRect viewFrame = self.window.rootViewController.view.frame;
     [UIView animateWithDuration:0.25 animations:^{
-        self.sheetView.frame = sheetViewF;
+        self.window.rootViewController.view.frame = CGRectMake(0,CGRectGetHeight(self.sheetView.frame) ,viewFrame.size.width , viewFrame.size.height);
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.25 animations:^{
-            self.alpha = 0.0;
+            self.window.alpha = 0.0;
         } completion:^(BOOL finished) {
             [self removeFromSuperview];
         }];
     }];
 }
-- (void)sheetBtnClick:(UIButton *)btn
+- (void)cancleBtnClick:(UIButton *)btn
 {
     [self coverClick];
     if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)])
     {
-        [self.delegate actionSheet:self clickedButtonAtIndex:self.dataSourceArray.count];
+        [self.delegate actionSheet:self clickedButtonAtIndex:0];
     }
 }
 - (UIImage*)createImageWithColor:(UIColor*)color
@@ -288,6 +288,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self coverClick];
-    [self.delegate actionSheet:self clickedButtonAtIndex:indexPath.row];
+    [self.delegate actionSheet:self clickedButtonAtIndex:(indexPath.row + 1)];
 }
 @end
