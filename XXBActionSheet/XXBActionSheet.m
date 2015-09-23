@@ -153,7 +153,7 @@
     _keyWindow = [UIApplication sharedApplication].keyWindow;
     _actionSheetWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _actionSheetWindow.backgroundColor = [UIColor clearColor];
-    _actionSheetWindow.windowLevel = UIWindowLevelAlert + 1;
+    _actionSheetWindow.windowLevel = CGFLOAT_MAX;
     [_actionSheetWindow makeKeyAndVisible];
     _actionSheetWindow.rootViewController = [[UIViewController alloc] init];
 }
@@ -250,10 +250,13 @@
 - (void)cancleBtnClick:(UIButton *)btn
 {
     [self coverClick];
-    if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)])
-    {
-        [self.delegate actionSheet:self clickedButtonAtIndex:0];
-    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)])
+        {
+            [self.delegate actionSheet:self clickedButtonAtIndex:0];
+        }
+    });
 }
 - (UIImage*)createImageWithColor:(UIColor*)color
 {
