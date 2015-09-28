@@ -133,6 +133,10 @@
     }
     return self;
 }
+- (void)dealloc
+{
+    NSLog(@"---->dealloc");
+}
 - (void)showInView:(UIView *)view
 {
     self.frame = self.actionSheetWindow.rootViewController.view.bounds;
@@ -231,15 +235,16 @@
 }
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self coverClick];
+    [self coverClick:nil];
 }
-- (void)coverClick
+- (void)coverClick:(void(^)())finish
 {
     [self.keyWindow makeKeyAndVisible];
     CGRect viewFrame = self.window.rootViewController.view.frame;
     [UIView animateWithDuration:0.25 animations:^{
         self.window.rootViewController.view.frame = CGRectMake(0,CGRectGetHeight(self.sheetView.frame) ,viewFrame.size.width , viewFrame.size.height);
     } completion:^(BOOL finished) {
+        finish();
         [UIView animateWithDuration:0.25 animations:^{
             self.window.alpha = 0.0;
         } completion:^(BOOL finished) {
@@ -249,14 +254,12 @@
 }
 - (void)cancleBtnClick:(UIButton *)btn
 {
-    [self coverClick];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
+    [self coverClick:^{
         if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)])
         {
             [self.delegate actionSheet:self clickedButtonAtIndex:0];
         }
-    });
+    }];
 }
 - (UIImage*)createImageWithColor:(UIColor*)color
 {
@@ -290,7 +293,8 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self coverClick];
-    [self.delegate actionSheet:self clickedButtonAtIndex:(indexPath.row + 1)];
+    [self coverClick:^{
+        [self.delegate actionSheet:self clickedButtonAtIndex:(indexPath.row + 1)];
+    }];
 }
 @end
